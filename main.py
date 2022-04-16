@@ -8,17 +8,26 @@ from random import choice
 
 
 BACKGROUND_COLOR = "#B1DDC6"
-
-word_data = pandas.read_csv("./data/french_words.csv")
-word_dict = word_data.to_dict(orient="records")
 random_word = {}
+word_dict = {}
 
-print(word_dict)
+try:
+    word_data = pandas.read_csv("./data/words_to_learn.csv")
+except FileNotFoundError:
+    original_data = pandas.read_csv("./data/french_words.csv")
+    word_dict = original_data.to_dict(orient="records")
+else:
+    word_dict = word_data.to_dict(orient="records")
 
-def approve():
+def know():
+
+    word_dict.remove(random_word)
+    print(len(word_dict))
+    to_learn_data = pandas.DataFrame(word_dict)
+    to_learn_data.to_csv("data/words_to_learn.csv", index=False)
     generate_new_word()
 
-def reject():
+def do_not_know():
     generate_new_word()
 
 def generate_new_word():
@@ -55,12 +64,12 @@ card_background = canvas.create_image(400, 263, image=flash_card_front_image)
 canvas.grid(column=0, row=0, columnspan=2)
 
 approve_image = PhotoImage(file="./images/right.png")
-approve_button = Button(text="", image=approve_image, highlightthickness=0, command=approve)
-approve_button.grid(column=1, row=1)
+know_button = Button(text="", image=approve_image, highlightthickness=0, command=know)
+know_button.grid(column=1, row=1)
 
 reject_image = PhotoImage(file="./images/wrong.png")
-reject_button = Button(text="", image=reject_image, highlightthickness=0, command=reject)
-reject_button.grid(column=0, row=1)
+do_not_know_button = Button(text="", image=reject_image, highlightthickness=0, command=do_not_know)
+do_not_know_button.grid(column=0, row=1)
 
 card_title = canvas.create_text(400, 150, text="French", font=("Arial", 30, "italic"))
 card_word = canvas.create_text(400, 250, text="Word", font=("Arial", 42, "bold"))
